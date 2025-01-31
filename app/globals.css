@@ -15,45 +15,112 @@ body {
 }
 
 @layer base {
-.theme-custom {
-    /* Name: custom color palette
+    .theme-custom {
+        /* Name: custom color palette
        Author: Ilias Ism
        URL: https://gradient.page */
 
-    /* CSS: .bg-gradient { background: var(--gradient) } */
-    --gradient: linear-gradient(to top left,#D38312,#A83279);
+        /* CSS: .bg-gradient { background: var(--gradient) } */
+        --gradient: linear-gradient(to top left, #D38312, #A83279);
 
-    --background: 37 54.6% 3.6%;
-    --foreground: 37 8.4% 97.25%;
+        --background: 37 54.6% 3.6%;
+        --foreground: 37 8.4% 97.25%;
 
-    --muted: 37 42% 13.5%;
-    --muted-foreground: 37 8.4% 54.5%;
+        --muted: 37 42% 13.5%;
+        --muted-foreground: 37 8.4% 54.5%;
 
-    --popover: 37 48.2% 5.8500000000000005%;
-    --popover-foreground: 37 8.4% 97.25%;
+        --popover: 37 48.2% 5.8500000000000005%;
+        --popover-foreground: 37 8.4% 97.25%;
 
-    --card: 37 48.2% 5.8500000000000005%;
-    --card-foreground: 37 8.4% 97.25%;
+        --card: 37 48.2% 5.8500000000000005%;
+        --card-foreground: 37 8.4% 97.25%;
 
-    --border: 37 42% 13.5%;
-    --input: 37 42% 13.5%;
+        --border: 37 42% 13.5%;
+        --input: 37 42% 13.5%;
 
-    --primary: 37 84% 45%;
-    --primary-foreground: 37 8.4% 97.25%;
+        --primary: 37 84% 45%;
+        --primary-foreground: 37 8.4% 97.25%;
 
-    --secondary: 37 42% 13.5%;
-    --secondary-foreground: 37 8.4% 97.25%;
+        --secondary: 37 42% 13.5%;
+        --secondary-foreground: 37 8.4% 97.25%;
 
-    --accent: 37 42% 13.5%;
-    --accent-foreground: 37 8.4% 97.25%;
+        --accent: 37 42% 13.5%;
+        --accent-foreground: 37 8.4% 97.25%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 37 8.4% 97.25%;
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 37 8.4% 97.25%;
 
-    --ring: 37 84% 45%;
-    --radius: 0.25rem;
-}
-  :root {
+        --ring: 37 84% 45%;
+        --radius: 0.25rem;
+
+        --sidebar-background: 37 54.6% 3.6%;
+        --sidebar-foreground: 37 8.4% 97.25%;
+        --sidebar-primary: 37 84% 45%;
+        --sidebar-primary-foreground: 37 8.4% 97.25%;
+        --sidebar-accent: 37 42% 13.5%;
+        --sidebar-accent-foreground: 37 8.4% 97.25%;
+        --sidebar-border: 37 42% 13.5%;
+        --sidebar-ring: 37 84% 45%;
+    }
+
+    .theme-custom-2 {
+        /* Name: custom color palette
+           Author: Ilias Ism
+           URL: https://gradient.page */
+    
+        /* CSS: .bg-gradient { background: var(--gradient) } */
+        --gradient: linear-gradient(to top left,#65379B,#886AEA,#6457C6);
+    
+        --background: 284 30.549999999999997% 3.28%;
+        --foreground: 284 4.699999999999999% 97.05%;
+    
+        --muted: 284 23.5% 12.299999999999999%;
+        --muted-foreground: 284 4.699999999999999% 54.1%;
+    
+        --popover: 284 55.6% 5.33%;
+        --popover-foreground: 284 4.699999999999999% 97.05%;
+    
+        --card: 284 55.6% 5.33%;
+        --card-foreground: 284 4.699999999999999% 97.05%;
+    
+        --border: 284 23.5% 12.299999999999999%;
+        --input: 284 23.5% 12.299999999999999%;
+    
+        --primary: 284 47% 41%;
+        --primary-foreground: 284 4.699999999999999% 97.05%;
+    
+        --secondary: 284 23.5% 12.299999999999999%;
+        --secondary-foreground: 284 4.699999999999999% 97.05%;
+    
+        --accent: 284 23.5% 12.299999999999999%;
+        --accent-foreground: 284 4.699999999999999% 97.05%;
+    
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 284 4.699999999999999% 97.05%;
+    
+        --ring: 284 47% 41%;
+        --radius: 0.25rem;
+
+        --sidebar-background: 284 30.55% 3.28%;
+        --sidebar-foreground: 284 4.7% 97.05%;
+        --sidebar-primary: 284 47% 41%;
+        --sidebar-primary-foreground: 284 4.7% 97.05%;
+        --sidebar-accent: 284 55.6% 5.33%;
+        --sidebar-accent-foreground: 284 4.7% 97.05%;
+        --sidebar-border: 284 23.5% 12.3%;
+        --sidebar-ring: 284 47% 41%;
+    }
+
+    :root {
+        --sidebar-background: 0 0% 98%;
+        --sidebar-foreground: 240 5.3% 26.1%;
+        --sidebar-primary: 240 5.9% 10%;
+        --sidebar-primary-foreground: 0 0% 98%;
+        --sidebar-accent: 240 4.8% 95.9%;
+        --sidebar-accent-foreground: 240 5.9% 10%;
+        --sidebar-border: 220 13% 91%;
+        --sidebar-ring: 217.2 91.2% 59.8%;
+
         --sidebar-background: 0 0% 98%;
         --sidebar-foreground: 240 5.3% 26.1%;
         --sidebar-primary: 240 5.9% 10%;
@@ -63,7 +130,8 @@ body {
         --sidebar-border: 220 13% 91%;
         --sidebar-ring: 217.2 91.2% 59.8%;
     }
-  .dark {
+
+    .dark {
         --sidebar-background: 240 5.9% 10%;
         --sidebar-foreground: 240 4.8% 95.9%;
         --sidebar-primary: 224.3 76.3% 48%;
@@ -72,6 +140,17 @@ body {
         --sidebar-accent-foreground: 240 4.8% 95.9%;
         --sidebar-border: 240 3.7% 15.9%;
         --sidebar-ring: 217.2 91.2% 59.8%;
+
+        --sidebar-background: 240 5.9% 10%;
+        --sidebar-foreground: 240 4.8% 95.9%;
+        --sidebar-primary: 224.3 76.3% 48%;
+        --sidebar-primary-foreground: 0 0% 100%;
+        --sidebar-accent: 240 3.7% 15.9%;
+        --sidebar-accent-foreground: 240 4.8% 95.9%;
+        --sidebar-border: 240 3.7% 15.9%;
+        --sidebar-ring: 217.2 91.2% 59.8%;
+
+        --radius: 0.5rem;
     }
 }
 

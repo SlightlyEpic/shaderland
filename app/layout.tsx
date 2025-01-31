@@ -26,7 +26,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <html lang="en">
             <UserProvider>
                 <body
-                    className={`${geistSans.variable} ${geistMono.variable} antialiased theme-custom`}
+                    className={`${geistSans.variable} ${geistMono.variable} antialiased theme-custom-2 dark`}
                 >
                     {children}
                     <Toaster />
