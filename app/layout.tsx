@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { Toaster } from "@/components/ui/sonner"
+import { UserProvider } from '@auth0/nextjs-auth0/client';
 import "./globals.css";
+
+import { Toaster } from "@/components/ui/sonner"
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
@@ -19,19 +21,17 @@ export const metadata: Metadata = {
 };
 
 
-export default function RootLayout({
-    children,
-}: Readonly<{
-    children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="en">
-            <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased theme-custom`}
-            >
-                {children}
-                <Toaster />
-            </body>
+            <UserProvider>
+                <body
+                    className={`${geistSans.variable} ${geistMono.variable} antialiased theme-custom`}
+                >
+                    {children}
+                    <Toaster />
+                </body>
+            </UserProvider>
         </html>
     );
 }
