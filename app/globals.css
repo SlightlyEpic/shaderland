@@ -2,26 +2,85 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+    width: 100%;
+    height: 100%;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+@layer base {
+.theme-custom {
+    /* Name: custom color palette
+       Author: Ilias Ism
+       URL: https://gradient.page */
+
+    /* CSS: .bg-gradient { background: var(--gradient) } */
+    --gradient: linear-gradient(to top left,#D38312,#A83279);
+
+    --background: 37 54.6% 3.6%;
+    --foreground: 37 8.4% 97.25%;
+
+    --muted: 37 42% 13.5%;
+    --muted-foreground: 37 8.4% 54.5%;
+
+    --popover: 37 48.2% 5.8500000000000005%;
+    --popover-foreground: 37 8.4% 97.25%;
+
+    --card: 37 48.2% 5.8500000000000005%;
+    --card-foreground: 37 8.4% 97.25%;
+
+    --border: 37 42% 13.5%;
+    --input: 37 42% 13.5%;
+
+    --primary: 37 84% 45%;
+    --primary-foreground: 37 8.4% 97.25%;
+
+    --secondary: 37 42% 13.5%;
+    --secondary-foreground: 37 8.4% 97.25%;
+
+    --accent: 37 42% 13.5%;
+    --accent-foreground: 37 8.4% 97.25%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 37 8.4% 97.25%;
+
+    --ring: 37 84% 45%;
+    --radius: 0.25rem;
+}
+  :root {
+        --sidebar-background: 0 0% 98%;
+        --sidebar-foreground: 240 5.3% 26.1%;
+        --sidebar-primary: 240 5.9% 10%;
+        --sidebar-primary-foreground: 0 0% 98%;
+        --sidebar-accent: 240 4.8% 95.9%;
+        --sidebar-accent-foreground: 240 5.9% 10%;
+        --sidebar-border: 220 13% 91%;
+        --sidebar-ring: 217.2 91.2% 59.8%;
+    }
+  .dark {
+        --sidebar-background: 240 5.9% 10%;
+        --sidebar-foreground: 240 4.8% 95.9%;
+        --sidebar-primary: 224.3 76.3% 48%;
+        --sidebar-primary-foreground: 0 0% 100%;
+        --sidebar-accent: 240 3.7% 15.9%;
+        --sidebar-accent-foreground: 240 4.8% 95.9%;
+        --sidebar-border: 240 3.7% 15.9%;
+        --sidebar-ring: 217.2 91.2% 59.8%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+    }
 }
