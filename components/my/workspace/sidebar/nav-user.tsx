@@ -87,9 +87,11 @@ export function NavUser({
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                            <LogOut />
-                            Log out
+                        <DropdownMenuItem asChild>
+                            <a href="/api/auth/logout" className='cursor-pointer'>
+                                <LogOut />
+                                Log out
+                            </a>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

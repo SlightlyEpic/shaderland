@@ -3,8 +3,9 @@
 import * as React from "react"
 import {
     BookOpen,
-    Bot,
+    Github,
     Grape,
+    Group,
     LifeBuoy,
     Send,
     Settings2,
@@ -24,112 +25,59 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { useUser } from '@auth0/nextjs-auth0/client'
-
-const data = {
-    navMain: [
-        {
-            title: "Playground",
-            url: "#",
-            icon: SquareTerminal,
-            isActive: true,
-            items: [
-                {
-                    title: "History",
-                    url: "#",
-                },
-                {
-                    title: "Starred",
-                    url: "#",
-                },
-                {
-                    title: "Settings",
-                    url: "#",
-                },
-            ],
-        },
-        {
-            title: "Models",
-            url: "#",
-            icon: Bot,
-            items: [
-                {
-                    title: "Genesis",
-                    url: "#",
-                },
-                {
-                    title: "Explorer",
-                    url: "#",
-                },
-                {
-                    title: "Quantum",
-                    url: "#",
-                },
-            ],
-        },
-        {
-            title: "Documentation",
-            url: "#",
-            icon: BookOpen,
-            items: [
-                {
-                    title: "Introduction",
-                    url: "#",
-                },
-                {
-                    title: "Get Started",
-                    url: "#",
-                },
-                {
-                    title: "Tutorials",
-                    url: "#",
-                },
-                {
-                    title: "Changelog",
-                    url: "#",
-                },
-            ],
-        },
-        {
-            title: "Settings",
-            url: "#",
-            icon: Settings2,
-            items: [
-                {
-                    title: "General",
-                    url: "#",
-                },
-                {
-                    title: "Team",
-                    url: "#",
-                },
-                {
-                    title: "Billing",
-                    url: "#",
-                },
-                {
-                    title: "Limits",
-                    url: "#",
-                },
-            ],
-        },
-    ],
-    navSecondary: [
-        {
-            title: "Support",
-            url: "#",
-            icon: LifeBuoy,
-        },
-        {
-            title: "Feedback",
-            url: "#",
-            icon: Send,
-        },
-    ],
-
-}
+import { useWorkspaceNames } from '@/lib/queries/useWorkspaceNames'
+import { useCurrentWorkspace } from '@/hooks/useCurrentWorkspace'
+import { useWorkspace } from '@/lib/queries/useWorkspace'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { user, error, isLoading } = useUser();
+    const workspaceNames = useWorkspaceNames();
+    const currentWorkspace = useCurrentWorkspace();
+    const workspaceData = !currentWorkspace
+        ? undefined
+        : useWorkspace(currentWorkspace);
+
+    const data = React.useMemo(() => ({
+        navMain: [
+            {
+                title: "My Workspaces",
+                url: "#",
+                icon: SquareTerminal,
+                isActive: true,
+                items: (workspaceNames.error || workspaceNames.isLoading)
+                    ? []
+                    : workspaceNames.data!.map(w => ({
+                        title: w.name,
+                        url: `/app/workspaces/${w.id}`,
+                    }))
+            },
+            ...(!currentWorkspace
+                ? []
+                : [{
+                title: "Workspace Programs",
+                url: "#",
+                icon: Group,
+                items: (!workspaceData || workspaceData.error || workspaceData.isLoading)
+                    ? []
+                    : workspaceData.data!.programs.map(p => ({
+                        title: p.name ?? '',
+                        url: `/app/workspaces/${currentWorkspace}/programs/${p._id ?? ''}`,
+                    }))
+            }]),
+        ],
+        navSecondary: [
+            {
+                title: "View on GitHub",
+                url: "https://github.com/SlightlyEpic/shaderland",
+                icon: Github,
+            },
+            {
+                title: "Feedback",
+                url: "#",
+                icon: Send,
+            },
+        ],
+    }), [workspaceNames, currentWorkspace]);
     
     return (
         <Sidebar

@@ -1,5 +1,5 @@
 type RouteParams = {
-    id: string,
+    workspaceId: string,
 };
 
 type WorkspacePageProps = {
