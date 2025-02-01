@@ -45,29 +45,6 @@ export const GET = withApiAuthRequired(async (req: NextRequest, ctx) => {
         return NextResponse.json({
             ...workspace,
             id: workspace._id.toString(),
-            // name: workspace.name,
-            // description: workspace.description || '',
-            // createdAt: workspace.createdAt,
-            // lastModified: workspace.lastModified,
-            // programs: workspace.programs.map(program => ({
-            //     id: program._id ? program._id.toString() : null,
-            //     name: program.name,
-            //     description: program.description || '',
-            //     createdAt: program.createdAt,
-            //     lastModified: program.lastModified,
-            //     shaders: {
-            //         vertex: {
-            //             code: program.shaders.vertex.code,
-            //             createdAt: program.shaders.vertex.createdAt,
-            //             lastModified: program.shaders.vertex.lastModified
-            //         },
-            //         fragment: {
-            //             code: program.shaders.fragment.code,
-            //             createdAt: program.shaders.fragment.createdAt,
-            //             lastModified: program.shaders.fragment.lastModified
-            //         }
-            //     }
-            // }))
         }, { status: 200 });
     } catch (error) {
         console.error('Error reading workspace:', error);
