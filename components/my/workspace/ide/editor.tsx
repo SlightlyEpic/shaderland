@@ -31,9 +31,8 @@ const ShaderEditor: React.FC<ShaderEditorProps> = ({ value, onChange, className 
 
     // Update highlighting
     useEffect(() => {
-        console.log('value changed');
-        if (highlighter && editorRef.current && value) {
-            const highlighted = highlighter.codeToHtml(value, {
+        if (highlighter && editorRef.current) {
+            const highlighted = highlighter.codeToHtml(value ?? '', {
                 lang: 'glsl',
                 theme: 'dark-plus'
             });

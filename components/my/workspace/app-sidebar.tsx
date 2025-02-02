@@ -27,6 +27,8 @@ import { useWorkspaceNames } from '@/lib/queries/useWorkspaceNames'
 import { useCurrentWorkspace } from '@/hooks/useCurrentWorkspace'
 import { useWorkspace } from '@/lib/queries/useWorkspace'
 import { useChangeProgram } from '@/lib/util/redirect'
+import { useUpdateShader } from '@/lib/mutations/useMutateShader'
+import { useShaderStore } from '@/lib/zustand/store'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { user, error, isLoading } = useUser();
@@ -34,6 +36,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const currentWorkspace = useCurrentWorkspace();
     const workspaceData = useWorkspace(currentWorkspace);
     const changeProgram = useChangeProgram();
+
+    const updateShader = useUpdateShader();
+    const zProgramId = useShaderStore(state => state.currentProgramId);
+    const zShaderType = useShaderStore(state => state.currentShader);
+    const zProgram = useShaderStore(state => zProgramId ? state.programs[zProgramId] : null);
+
+    const saveAndChangeProgram = React.useCallback(async (pid: string) => {
+        if(!zProgramId) return;
+        if(!currentWorkspace) return;
+        updateShader.mutateAsync({
+            programId: zProgramId,
+            update: {
+                type: zShaderType,
+                code: zShaderType === 'vertex' ? zProgram!.vertexShader : zProgram!.fragmentShader,
+            },
+            workspaceId: currentWorkspace,
+        });
+
+        changeProgram(pid);
+    }, [updateShader]);
 
     const data = React.useMemo(() => ({
         navMain: [

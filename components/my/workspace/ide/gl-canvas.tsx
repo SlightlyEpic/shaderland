@@ -1,9 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 type GLCanvasProps = {
-    vertShaderSource: string,
-    fragShaderSource: string,
+    vertShaderSource?: string,
+    fragShaderSource?: string,
     refresh: boolean,
+    timeUniform: boolean,
+    mouseUniform: boolean,
 };
 
 export function GLCanvas(props: GLCanvasProps) {
@@ -12,7 +14,8 @@ export function GLCanvas(props: GLCanvasProps) {
     const glContextRef = useRef<WebGLRenderingContext | null>(null);
     const animationFrameRef = useRef<number>();
     const startTimeRef = useRef<number>(Date.now());
-    const [mousePos, setMousePos] = useState<[number, number]>([0, 0]);
+    // const [mousePos, setMousePos] = useState<[number, number]>([0, 0]);
+    const mousePos = useRef<[number, number]>([0, 0]);
     const programRef = useRef<WebGLProgram | null>(null);
     const uniformLocationsRef = useRef<{
         time?: WebGLUniformLocation | null;
@@ -23,6 +26,8 @@ export function GLCanvas(props: GLCanvasProps) {
     // Initialize WebGL context
     useEffect(() => {
         if (!canvasRef.current) return;
+        if (!props.vertShaderSource) return;
+        if (!props.fragShaderSource) return;
 
         const gl = canvasRef.current.getContext('webgl');
         if (!gl) {
@@ -77,7 +82,7 @@ export function GLCanvas(props: GLCanvasProps) {
                 gl.deleteBuffer(positionBuffer);
             }
         };
-    }, [props.vertShaderSource, props.fragShaderSource, props.refresh]);
+    }, [props.refresh]);
 
     // Handle mouse move
     useEffect(() => {
@@ -87,7 +92,8 @@ export function GLCanvas(props: GLCanvasProps) {
             const rect = canvasRef.current.getBoundingClientRect();
             const x = (event.clientX - rect.left) / rect.width;
             const y = 1.0 - (event.clientY - rect.top) / rect.height;
-            setMousePos([x, y]);
+            // setMousePos([x, y]);
+            mousePos.current = [x, y];
         }
 
         if (canvasRef.current) {
@@ -98,20 +104,21 @@ export function GLCanvas(props: GLCanvasProps) {
         }
     }, []);
 
+
     // Animation loop
-    function animate() {
+    const animate = useCallback(() => {
         if (!glContextRef.current || !programRef.current) return;
 
         const gl = glContextRef.current;
         const uniforms = uniformLocationsRef.current;
         
-        if (uniforms.time) {
+        if (uniforms.time && props.timeUniform) {
             const currentTime = (Date.now() - startTimeRef.current) / 1000.0;
             gl.uniform1f(uniforms.time, currentTime);
         }
 
-        if (uniforms.mouse) {
-            gl.uniform2f(uniforms.mouse, mousePos[0], mousePos[1]);
+        if (uniforms.mouse && props.mouseUniform) {
+            gl.uniform2f(uniforms.mouse, mousePos.current[0], mousePos.current[1]);
         }
 
         if (uniforms.resolution) {
@@ -120,7 +127,7 @@ export function GLCanvas(props: GLCanvasProps) {
 
         render(gl);
         animationFrameRef.current = requestAnimationFrame(animate);
-    }
+    }, [props.mouseUniform, props.timeUniform])
 
     // Shader creation functions remain the same...
     function createShader(gl: WebGLRenderingContext, type: number, source: string): WebGLShader | null {

@@ -4,6 +4,7 @@ import ShaderEditor from '@/components/my/workspace/ide/editor';
 import { GLCanvas } from '@/components/my/workspace/ide/gl-canvas';
 import { Button } from '@/components/ui/button';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
+import { Switch } from '@/components/ui/switch';
 import { useCurrentWorkspace } from '@/hooks/useCurrentWorkspace';
 import { useUpdateShader } from '@/lib/mutations/useMutateShader';
 import { useWorkspace } from '@/lib/queries/useWorkspace';
@@ -25,6 +26,9 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
     const [_refreshCanvas, setRefreshCanvas] = useState(false);
     const saveShaderSource = useUpdateShader();
 
+    const [enableTimeUniform, setEnableTimeUniform] = useState(false);
+    const [enableMouseUniform, setEnableMouseUniform] = useState(false);
+
     const workspaceId = useCurrentWorkspace();
     const workspace = useWorkspace(workspaceId);
 
@@ -35,13 +39,14 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
     const updateVertexShader = useShaderStore(state => state.updateVertexShader);
     const currentShader = useShaderStore(state => state.currentShader);
 
-    const program = workspace?.data?.programs?.find(p => (p._id as unknown as string) === programId);
+    // const program = workspace?.data?.programs?.find(p => (p._id as unknown as string) === programId);
+    const program = useShaderStore(state => programId ? state.programs[programId] : null);
     const [shaderContent, setShaderContent] = useState<string>()
     
     useEffect(() => {
         currentShader === 'vertex'
-            ? setShaderContent(program?.shaders.vertex.code)
-            : setShaderContent(program?.shaders.fragment.code);
+            ? setShaderContent(program?.vertexShader)
+            : setShaderContent(program?.fragmentShader);
     }, [program, currentShader]);
 
     const refreshCanvas = useCallback(() => setRefreshCanvas(r => !r), []);
@@ -66,19 +71,31 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
         <div className='flex flex-col w-full h-full'>
             <ResizablePanelGroup direction='horizontal'>
                 <ResizablePanel defaultSize={50} className='h-full'>
-                    <div className='w-full flex items-center gap-4 p-2'>
-                        <div className='text-white/30'>
+                    <div className='w-full flex items-center border-b'>
+                        {/* <div className='text-white/30 p-3'>
                             WebGL output
+                        </div> */}
+                        
+                        <div className='flex items-center gap-2 text-sm border-x p-3'>
+                            <Switch checked={enableTimeUniform} onCheckedChange={setEnableTimeUniform} />
+                            u_time
                         </div>
-                        <Button className='group flex items-center ml-auto' size='sm' onClick={refreshCanvas}>
+                        <div className='flex items-center gap-2 text-sm border-x p-3'>
+                            <Switch checked={enableMouseUniform} onCheckedChange={setEnableMouseUniform} />
+                            u_mouse
+                        </div>
+
+                        <Button className='group flex items-center ml-auto mr-2' size='sm' onClick={refreshCanvas}>
                             <RefreshCcw className='transition-transform duration-500 rotate-0 group-hover:rotate-180' /> 
                             Refresh output
                         </Button>
                     </div>
                     <GLCanvas
-                        vertShaderSource={defaultVertexShaderSource}
-                        fragShaderSource={defaultFragmentShaderSource}
+                        vertShaderSource={program?.vertexShader}
+                        fragShaderSource={program?.fragmentShader}
                         refresh={_refreshCanvas}
+                        mouseUniform={enableMouseUniform}
+                        timeUniform={enableTimeUniform}
                     />
                 </ResizablePanel>
                 <ResizableHandle withHandle />
