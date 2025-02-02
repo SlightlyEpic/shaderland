@@ -13,10 +13,13 @@ import {
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { useSidebar } from "@/components/ui/sidebar"
-import ProfileCsr from './profile-csr'
+import { useCurrentWorkspace } from '@/hooks/useCurrentWorkspace'
+import { useWorkspace } from '@/lib/queries/useWorkspace'
 
 export function SiteHeader() {
     const { toggleSidebar } = useSidebar()
+    const workspaceId = useCurrentWorkspace();
+    const workspace = useWorkspace(workspaceId);
 
     return (
         <header className="fle sticky top-0 z-50 w-full items-center border-b bg-background">
@@ -33,14 +36,18 @@ export function SiteHeader() {
                 <Breadcrumb className="hidden sm:block">
                     <BreadcrumbList>
                         <BreadcrumbItem>
-                            <BreadcrumbLink href="#">
-                                Building Your Application
+                            <BreadcrumbLink href="/app">
+                                Workspaces
                             </BreadcrumbLink>
                         </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                        </BreadcrumbItem>
+                        {workspace?.data &&
+                            <>
+                                <BreadcrumbSeparator />
+                                <BreadcrumbItem>
+                                    <BreadcrumbPage>{workspace.data.name}</BreadcrumbPage>
+                                </BreadcrumbItem>
+                            </>
+                        }
                     </BreadcrumbList>
                 </Breadcrumb>
                 {/* <ProfileCsr className='ml-auto' /> */}

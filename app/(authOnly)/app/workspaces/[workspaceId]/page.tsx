@@ -24,12 +24,12 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
         <div className='flex flex-col w-full h-full'>
             <ResizablePanelGroup direction='horizontal'>
                 <ResizablePanel defaultSize={50} className='h-full'>
-                    <div className='w-full flex gap-4 p-2'>
+                    {/* <div className='w-full flex gap-4 p-2'>
                         <Button className='group flex items-center ml-auto' size='sm' onClick={refresh}>
                             <RefreshCcw className='transition-transform duration-500 rotate-0 group-hover:rotate-180' /> 
                             Refresh output
                         </Button>
-                    </div>
+                    </div> */}
                     <GLCanvas
                         vertShaderSource={defaultVertexShaderSource}
                         fragShaderSource={defaultFragmentShaderSource}
