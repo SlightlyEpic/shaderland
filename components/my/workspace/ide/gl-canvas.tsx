@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useEffect, useRef, useState } from 'react';
 
 type GLCanvasProps = {
@@ -10,6 +8,7 @@ type GLCanvasProps = {
 
 export function GLCanvas(props: GLCanvasProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
     const glContextRef = useRef<WebGLRenderingContext | null>(null);
     const animationFrameRef = useRef<number>();
     const startTimeRef = useRef<number>(Date.now());
@@ -21,6 +20,7 @@ export function GLCanvas(props: GLCanvasProps) {
         resolution?: WebGLUniformLocation | null;
     }>({});
 
+    // Initialize WebGL context
     useEffect(() => {
         if (!canvasRef.current) return;
 
@@ -31,36 +31,43 @@ export function GLCanvas(props: GLCanvasProps) {
         }
         glContextRef.current = gl;
 
+        // Create shader program
         const program = createShaderProgram(gl, props.vertShaderSource, props.fragShaderSource);
         if (!program) return;
-
+        
         programRef.current = program;
         gl.useProgram(program);
 
+        // Get uniform locations
         uniformLocationsRef.current = {
             time: gl.getUniformLocation(program, 'u_time'),
             mouse: gl.getUniformLocation(program, 'u_mouse'),
             resolution: gl.getUniformLocation(program, 'u_resolution')
         };
 
+        // Create a simple quad that fills the canvas
         const positions = new Float32Array([
             -1.0, -1.0,
-            1.0, -1.0,
-            -1.0, 1.0,
-            1.0, 1.0,
+             1.0, -1.0,
+            -1.0,  1.0,
+             1.0,  1.0,
         ]);
 
+        // Create and bind position buffer
         const positionBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
 
+        // Get position attribute location and enable it
         const positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
         gl.enableVertexAttribArray(positionAttributeLocation);
         gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
+        // Start animation loop
         startTimeRef.current = Date.now();
         animate();
 
+        // Cleanup
         return () => {
             if (animationFrameRef.current) {
                 cancelAnimationFrame(animationFrameRef.current);
@@ -72,26 +79,32 @@ export function GLCanvas(props: GLCanvasProps) {
         };
     }, [props.vertShaderSource, props.fragShaderSource, props.refresh]);
 
+    // Handle mouse move
     useEffect(() => {
         function handleMouseMove(event: MouseEvent) {
             if (!canvasRef.current) return;
-
+            
             const rect = canvasRef.current.getBoundingClientRect();
             const x = (event.clientX - rect.left) / rect.width;
             const y = 1.0 - (event.clientY - rect.top) / rect.height;
             setMousePos([x, y]);
         }
 
-        window.addEventListener('mousemove', handleMouseMove);
-        return () => window.removeEventListener('mousemove', handleMouseMove);
+        if (canvasRef.current) {
+            canvasRef.current.addEventListener('mousemove', handleMouseMove);
+            return () => {
+                canvasRef.current?.removeEventListener('mousemove', handleMouseMove);
+            };
+        }
     }, []);
 
+    // Animation loop
     function animate() {
         if (!glContextRef.current || !programRef.current) return;
 
         const gl = glContextRef.current;
         const uniforms = uniformLocationsRef.current;
-
+        
         if (uniforms.time) {
             const currentTime = (Date.now() - startTimeRef.current) / 1000.0;
             gl.uniform1f(uniforms.time, currentTime);
@@ -109,6 +122,7 @@ export function GLCanvas(props: GLCanvasProps) {
         animationFrameRef.current = requestAnimationFrame(animate);
     }
 
+    // Shader creation functions remain the same...
     function createShader(gl: WebGLRenderingContext, type: number, source: string): WebGLShader | null {
         const shader = gl.createShader(type);
         if (!shader) {
@@ -169,41 +183,47 @@ export function GLCanvas(props: GLCanvasProps) {
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     }
 
+    // Size observer setup
     useEffect(() => {
-        function handleResize() {
-            if (!canvasRef.current || !glContextRef.current) return;
+        if (!containerRef.current || !canvasRef.current || !glContextRef.current) return;
 
-            const canvas = canvasRef.current;
-            const gl = glContextRef.current;
-            const uniforms = uniformLocationsRef.current;
+        const resizeObserver = new ResizeObserver(entries => {
+            for (const entry of entries) {
+                if (entry.target === containerRef.current) {
+                    const canvas = canvasRef.current;
+                    const gl = glContextRef.current;
+                    if (!canvas || !gl) return;
 
-            const dpr = window.devicePixelRatio || 1;
-            const displayWidth = Math.floor(canvas.clientWidth * dpr);
-            const displayHeight = Math.floor(canvas.clientHeight * dpr);
+                    const dpr = window.devicePixelRatio || 1;
+                    const width = entry.contentRect.width;
+                    const height = entry.contentRect.height;
+                    const displayWidth = Math.floor(width * dpr);
+                    const displayHeight = Math.floor(height * dpr);
 
-            if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
-                canvas.width = displayWidth;
-                canvas.height = displayHeight;
+                    canvas.style.width = `${width}px`;
+                    canvas.style.height = `${height}px`;
+                    canvas.width = displayWidth;
+                    canvas.height = displayHeight;
 
-                if (uniforms.resolution) {
-                    gl.uniform2f(uniforms.resolution, displayWidth, displayHeight);
+                    if (uniformLocationsRef.current.resolution) {
+                        gl.uniform2f(uniformLocationsRef.current.resolution, displayWidth, displayHeight);
+                    }
+
+                    render(gl);
                 }
-
-                render(gl);
             }
-        }
+        });
 
-        window.addEventListener('resize', handleResize);
-        handleResize();
-
-        return () => window.removeEventListener('resize', handleResize);
+        resizeObserver.observe(containerRef.current);
+        return () => resizeObserver.disconnect();
     }, []);
 
     return (
-        <canvas
-            ref={canvasRef}
-            className="w-full h-full"
-            style={{ display: 'block' }}
-        />
+        <div ref={containerRef} className="w-full h-full relative">
+            <canvas 
+                ref={canvasRef}
+                className="absolute top-0 left-0"
+            />
+        </div>
     );
 }

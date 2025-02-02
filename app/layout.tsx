@@ -3,6 +3,9 @@ import localFont from "next/font/local";
 import { UserProvider } from '@auth0/nextjs-auth0/client';
 import "./globals.css";
 
+import 'prismjs';
+import 'prismjs/themes/prism-tomorrow.min.css'
+
 import { Toaster } from "@/components/ui/sonner"
 
 const geistSans = localFont({

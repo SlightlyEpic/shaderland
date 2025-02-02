@@ -1,25 +1,31 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-interface NewWorkspaceResponse {
+interface NewProgramResponse {
     id: string,
     name: string,
     description?: string,
 }
 
-interface NewWorkspaceVariables {
+interface NewProgramVariables {
+    workspaceId?: string;
     name: string;
     description?: string;
 }
 
-async function createNewWorkspace(vars: NewWorkspaceVariables): Promise<NewWorkspaceResponse> {
+async function createNewProgram(vars: NewProgramVariables): Promise<NewProgramResponse> {
+    if(!vars.workspaceId) throw new Error('Workspace id not provided');
+    
     const response = await fetch(
-        `/api/workspaces`,
+        `/api/workspaces/${vars.workspaceId}/programs`,
         {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(vars),
+            body: JSON.stringify({
+                name: vars.name,
+                description: vars.description,
+            }),
         }
     );
 
@@ -31,14 +37,14 @@ async function createNewWorkspace(vars: NewWorkspaceVariables): Promise<NewWorks
     return response.json();
 }
 
-export function useNewWorkspaceMutation() {
+export function useNewProgramMutation(workspaceId?: string) {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: createNewWorkspace,
+        mutationFn: createNewProgram,
         onSuccess: (data, variables) => {
             queryClient.invalidateQueries({
-                queryKey: ['workspace-names']
+                queryKey: ['workspaces', workspaceId]
             });
         },
         retry: 3,

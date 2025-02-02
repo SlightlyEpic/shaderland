@@ -5,6 +5,7 @@ import {
     Github,
     Grape,
     Group,
+    PlusCircle,
     Send,
     SquareTerminal,
 } from "lucide-react"
@@ -25,12 +26,14 @@ import { useUser } from '@auth0/nextjs-auth0/client'
 import { useWorkspaceNames } from '@/lib/queries/useWorkspaceNames'
 import { useCurrentWorkspace } from '@/hooks/useCurrentWorkspace'
 import { useWorkspace } from '@/lib/queries/useWorkspace'
+import { useChangeProgram } from '@/lib/util/redirect'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { user, error, isLoading } = useUser();
     const workspaceNames = useWorkspaceNames();
     const currentWorkspace = useCurrentWorkspace();
     const workspaceData = useWorkspace(currentWorkspace);
+    const changeProgram = useChangeProgram();
 
     const data = React.useMemo(() => ({
         navMain: [
@@ -52,12 +55,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 title: "Workspace Programs",
                 // url: "#",
                 icon: Group,
-                items: (!workspaceData || workspaceData.error || workspaceData.isLoading)
-                    ? []
-                    : workspaceData.data!.programs.map(p => ({
-                        title: p.name ?? '',
-                        url: `/app/workspaces/${currentWorkspace}/programs/${p._id ?? ''}`,
-                    }))
+                isActive: true,
+                items: [
+                    {
+                        title: 'New program',
+                        icon: PlusCircle,
+                    },
+                    ...(!workspaceData.data
+                        ? []
+                        : workspaceData.data!.programs.map(p => ({
+                            title: p.name ?? '',
+                            // url: `/app/workspaces/${currentWorkspace}/programs/${p._id ?? ''}`,
+                            onClick: () => changeProgram(p._id as unknown as string),
+                        })
+                    )
+                )]
             }]),
         ],
         navSecondary: [

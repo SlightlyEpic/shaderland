@@ -15,11 +15,14 @@ import { Separator } from "@/components/ui/separator"
 import { useSidebar } from "@/components/ui/sidebar"
 import { useCurrentWorkspace } from '@/hooks/useCurrentWorkspace'
 import { useWorkspace } from '@/lib/queries/useWorkspace'
+import { useShaderStore } from '@/lib/zustand/store'
 
 export function SiteHeader() {
     const { toggleSidebar } = useSidebar()
     const workspaceId = useCurrentWorkspace();
     const workspace = useWorkspace(workspaceId);
+    const currentProgramId = useShaderStore(store => store.currentProgramId);
+    const currentProgram = workspace?.data?.programs?.find(p => (p._id as unknown as string) === currentProgramId);
 
     return (
         <header className="fle sticky top-0 z-50 w-full items-center border-b bg-background">
@@ -45,6 +48,20 @@ export function SiteHeader() {
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem>
                                     <BreadcrumbPage>{workspace.data.name}</BreadcrumbPage>
+                                </BreadcrumbItem>
+                            </>
+                        }
+                        {currentProgram &&
+                            <>
+                                <BreadcrumbSeparator />
+                                <BreadcrumbItem>
+                                    <BreadcrumbLink href={`/app/workspaces/${workspaceId}`}>
+                                        Programs
+                                    </BreadcrumbLink>
+                                </BreadcrumbItem>
+                                <BreadcrumbSeparator />
+                                <BreadcrumbItem>
+                                    <BreadcrumbPage>{currentProgram.name}</BreadcrumbPage>
                                 </BreadcrumbItem>
                             </>
                         }

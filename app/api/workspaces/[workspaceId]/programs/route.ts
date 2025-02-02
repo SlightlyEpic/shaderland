@@ -3,6 +3,7 @@ import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
 import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import clientPromise from '@/lib/mongoose';
+import { defaultFragmentShaderSource, defaultVertexShaderSource } from '@/lib/util/defaultShaders';
 
 // Define the request body type for type safety
 interface CreateProgramRequest {
@@ -82,13 +83,13 @@ export const POST = withApiAuthRequired(async (req: NextRequest, ctx) => {
             shaders: {
                 vertex: {
                     type: 'vertex',
-                    code: '',
+                    code: defaultVertexShaderSource,
                     createdAt: new Date(),
                     lastModified: new Date()
                 },
                 fragment: {
                     type: 'fragment',
-                    code: '',
+                    code: defaultFragmentShaderSource,
                     createdAt: new Date(),
                     lastModified: new Date()
                 }

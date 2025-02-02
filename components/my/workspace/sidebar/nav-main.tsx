@@ -18,18 +18,21 @@ import {
     SidebarMenuSubButton,
     SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
+import { NewProgramDialog } from '../new-program-dialog'
 
 export function NavMain({
     items,
 }: {
     items: {
-        title: string
-        url?: string
-        icon: LucideIcon
-        isActive?: boolean
+        title: string,
+        url?: string,
+        icon: LucideIcon,
+        isActive?: boolean,
         items?: {
-            title: string
-            url: string
+            icon?: LucideIcon,
+            title: string,
+            url?: string,
+            onClick?: (...params: unknown[]) => unknown,
         }[]
     }[]
 }) {
@@ -56,15 +59,39 @@ export function NavMain({
                                     </CollapsibleTrigger>
                                     <CollapsibleContent>
                                         <SidebarMenuSub>
-                                            {item.items?.map((subItem) => (
+                                            {item.items?.map((subItem) => {
+                                                if(subItem.title === 'New program') {
+                                                    return (
+                                                        <SidebarMenuSubItem key={subItem.title}>
+                                                            <SidebarMenuSubButton asChild>
+                                                                <NewProgramDialog>
+                                                                    <span 
+                                                                        onClick={subItem.onClick!} 
+                                                                        className='flex gap-2 items-center text-sm bg-white/5 p-1 px-2 rounded-md cursor-pointer hover:text-blue-400'
+                                                                    >
+                                                                        {subItem.icon && <subItem.icon size={16} />} {subItem.title}
+                                                                    </span>
+                                                                </NewProgramDialog>
+                                                            </SidebarMenuSubButton>
+                                                        </SidebarMenuSubItem>
+                                                    )
+                                                }
+                                                
+                                                return (
                                                 <SidebarMenuSubItem key={subItem.title}>
                                                     <SidebarMenuSubButton asChild>
-                                                        <a href={subItem.url}>
-                                                            <span>{subItem.title}</span>
-                                                        </a>
+                                                        {subItem.url
+                                                            ? <a href={subItem.url}>
+                                                                {subItem.icon && <subItem.icon />} <span>{subItem.title}</span>
+                                                            </a>
+                                                            : <span onClick={subItem.onClick!} className='cursor-pointer'>
+                                                                {subItem.icon && <subItem.icon />} {subItem.title}
+                                                            </span>
+                                                        }
+                                                        
                                                     </SidebarMenuSubButton>
                                                 </SidebarMenuSubItem>
-                                            ))}
+                                            )})}
                                         </SidebarMenuSub>
                                     </CollapsibleContent>
                                 </>
