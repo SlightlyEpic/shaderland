@@ -49,19 +49,15 @@ export function useUpdateShader() {
 
     return useMutation({
         mutationFn: updateShader,
-        // When the mutation is successful, invalidate related queries
         onSuccess: (data, variables) => {
-            // Invalidate the specific program query
             queryClient.invalidateQueries({
                 queryKey: ['workspace', variables.workspaceId, 'program', variables.programId]
             });
 
-            // Optionally invalidate the workspace query if you're showing shader info there
             queryClient.invalidateQueries({
                 queryKey: ['workspace', variables.workspaceId]
             });
         },
-        // Optional retry configuration
         retry: 3,
         retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     });

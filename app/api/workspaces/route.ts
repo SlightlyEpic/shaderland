@@ -7,7 +7,7 @@ import { fromError } from 'zod-validation-error';
 
 const bodySchema = z.object({
     name: z.string().min(1).max(128),
-    description: z.optional(z.string().min(1).max(512)),
+    description: z.optional(z.string().max(512)),
 });
 
 export const POST = withApiAuthRequired(async function (req: NextRequest) {
@@ -45,7 +45,8 @@ export const POST = withApiAuthRequired(async function (req: NextRequest) {
         // Return the newly created workspace's ID
         return NextResponse.json({
             id: (newWorkspace._id as any).toString(),
-            name: newWorkspace.name
+            name: newWorkspace.name,
+            description: newWorkspace.description,
         }, { status: 201 });
     } catch (error) {
         console.error('Error creating workspace:', error);

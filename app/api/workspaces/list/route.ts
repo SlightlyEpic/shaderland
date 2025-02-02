@@ -27,6 +27,7 @@ export const GET = withApiAuthRequired(async (req: NextRequest) => {
             id: w._id.toString(),
             name: w.name,
             description: w.description,
+            createdAt: w.createdAt.getTime(),
         }), { status: 200 }));
     } catch (error) {
         console.error('Error reading workspace:', error);

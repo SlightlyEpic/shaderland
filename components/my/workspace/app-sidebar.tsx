@@ -2,13 +2,10 @@
 
 import * as React from "react"
 import {
-    BookOpen,
     Github,
     Grape,
     Group,
-    LifeBuoy,
     Send,
-    Settings2,
     SquareTerminal,
 } from "lucide-react"
 
@@ -33,15 +30,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { user, error, isLoading } = useUser();
     const workspaceNames = useWorkspaceNames();
     const currentWorkspace = useCurrentWorkspace();
-    const workspaceData = !currentWorkspace
-        ? undefined
-        : useWorkspace(currentWorkspace);
+    const workspaceData = useWorkspace(currentWorkspace);
 
     const data = React.useMemo(() => ({
         navMain: [
             {
                 title: "My Workspaces",
-                url: "#",
+                url: "/app",
                 icon: SquareTerminal,
                 isActive: true,
                 items: (workspaceNames.error || workspaceNames.isLoading)
@@ -55,7 +50,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 ? []
                 : [{
                 title: "Workspace Programs",
-                url: "#",
+                // url: "#",
                 icon: Group,
                 items: (!workspaceData || workspaceData.error || workspaceData.isLoading)
                     ? []

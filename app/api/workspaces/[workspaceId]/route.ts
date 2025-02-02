@@ -9,7 +9,7 @@ type RouteParams = {
 };
 
 export const GET = withApiAuthRequired(async (req: NextRequest, ctx) => {
-    const params = ctx.params as unknown as RouteParams;
+    const params = ctx.params as RouteParams;
     const session = await getSession();
     if (!session || !session.user) {
         return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
@@ -26,28 +26,58 @@ export const GET = withApiAuthRequired(async (req: NextRequest, ctx) => {
     }
 
     try {
-        // Validate that the ID is a valid MongoDB ObjectId
         if (!mongoose.Types.ObjectId.isValid(workspaceId)) {
             return NextResponse.json({ message: 'Invalid workspace ID' }, { status: 400 });
         }
 
-        // Find the workspace, ensuring it belongs to the user
         const workspace = await Workspace.findOne({
             _id: workspaceId,
             userSub: userSub
-        }).lean(); // .lean() for performance if you don't need mongoose document methods
+        }).lean();
 
         if (!workspace) {
             return NextResponse.json({ message: 'Workspace not found or access denied' }, { status: 404 });
         }
 
-        // Convert MongoDB _id to string for consistent JSON serialization
         return NextResponse.json({
             ...workspace,
             id: workspace._id.toString(),
         }, { status: 200 });
     } catch (error) {
         console.error('Error reading workspace:', error);
+        return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+    }
+});
+
+export const DELETE = withApiAuthRequired(async (req: NextRequest, ctx) => {
+    const params = ctx.params as RouteParams;
+
+    const session = await getSession();
+    if (!session || !session.user) {
+        return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const userSub = session.user.sub;
+    const workspaceId = params.workspaceId;
+
+    await clientPromise;
+    await Workspace.init();
+
+    if (!workspaceId) {
+        return NextResponse.json({ message: 'Workspace ID is required' }, { status: 400 });
+    }
+
+    try {
+        const deleteResult = await Workspace.deleteOne({
+            _id: workspaceId,
+            userSub: userSub
+        });
+
+        return NextResponse.json({
+            message: 'success',
+        }, { status: 200 });
+    } catch (error) {
+        console.error('Error deleting workspace:', error);
         return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }
 });

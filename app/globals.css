@@ -16,11 +16,6 @@ body {
 
 @layer base {
     .theme-custom {
-        /* Name: custom color palette
-       Author: Ilias Ism
-       URL: https://gradient.page */
-
-        /* CSS: .bg-gradient { background: var(--gradient) } */
         --gradient: linear-gradient(to top left, #D38312, #A83279);
 
         --background: 37 54.6% 3.6%;
@@ -64,40 +59,35 @@ body {
     }
 
     .theme-custom-2 {
-        /* Name: custom color palette
-           Author: Ilias Ism
-           URL: https://gradient.page */
-    
-        /* CSS: .bg-gradient { background: var(--gradient) } */
-        --gradient: linear-gradient(to top left,#65379B,#886AEA,#6457C6);
-    
+        --gradient: linear-gradient(to top left, #65379B, #886AEA, #6457C6);
+
         --background: 284 30.549999999999997% 3.28%;
         --foreground: 284 4.699999999999999% 97.05%;
-    
+
         --muted: 284 23.5% 12.299999999999999%;
         --muted-foreground: 284 4.699999999999999% 54.1%;
-    
+
         --popover: 284 55.6% 5.33%;
         --popover-foreground: 284 4.699999999999999% 97.05%;
-    
+
         --card: 284 55.6% 5.33%;
         --card-foreground: 284 4.699999999999999% 97.05%;
-    
+
         --border: 284 23.5% 12.299999999999999%;
         --input: 284 23.5% 12.299999999999999%;
-    
+
         --primary: 284 47% 41%;
         --primary-foreground: 284 4.699999999999999% 97.05%;
-    
+
         --secondary: 284 23.5% 12.299999999999999%;
         --secondary-foreground: 284 4.699999999999999% 97.05%;
-    
+
         --accent: 284 23.5% 12.299999999999999%;
         --accent-foreground: 284 4.699999999999999% 97.05%;
-    
+
         --destructive: 0 62.8% 30.6%;
         --destructive-foreground: 284 4.699999999999999% 97.05%;
-    
+
         --ring: 284 47% 41%;
         --radius: 0.25rem;
 
@@ -109,6 +99,49 @@ body {
         --sidebar-accent-foreground: 284 4.7% 97.05%;
         --sidebar-border: 284 23.5% 12.3%;
         --sidebar-ring: 284 47% 41%;
+    }
+
+    .theme-dark-blue {
+        --gradient: linear-gradient(to top left, #1E3A8A, #3B82F6);
+
+        --background: 220 15% 10%;
+        --foreground: 220 20% 95%;
+
+        --muted: 220 20% 15%;
+        --muted-foreground: 220 8% 70%;
+
+        --popover: 220 20% 12%;
+        --popover-foreground: 220 20% 95%;
+
+        --card: 220 20% 12%;
+        --card-foreground: 220 20% 95%;
+
+        --border: 220 20% 15%;
+        --input: 220 20% 15%;
+
+        --primary: 220 85% 50%;
+        --primary-foreground: 220 20% 95%;
+
+        --secondary: 220 20% 15%;
+        --secondary-foreground: 220 20% 95%;
+
+        --accent: 220 50% 40%;
+        --accent-foreground: 220 20% 95%;
+
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 220 20% 95%;
+
+        --ring: 220 85% 50%;
+        --radius: 0.25rem;
+
+        --sidebar-background: 220 15% 10%;
+        --sidebar-foreground: 220 20% 95%;
+        --sidebar-primary: 220 85% 50%;
+        --sidebar-primary-foreground: 220 20% 95%;
+        --sidebar-accent: 220 50% 40%;
+        --sidebar-accent-foreground: 220 20% 95%;
+        --sidebar-border: 220 20% 15%;
+        --sidebar-ring: 220 85% 50%;
     }
 
     :root {
@@ -152,11 +185,58 @@ body {
 
         --radius: 0.5rem;
     }
+
+    /* ::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: hsl(var(--muted));
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(to top left, #65379B, #886AEA, #6457C6);
+        border-radius: 10px;
+        border: 3px solid hsl(var(--background));
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: hsl(var(--primary));
+    } */
+
+    /* Dark Theme Scrollbar */
+    ::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: hsl(var(--sidebar-background));
+        border-radius: var(--radius);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: hsl(var(--sidebar-primary));
+        border: 3px solid hsl(var(--sidebar-background));
+        border-radius: var(--radius);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: hsl(var(--sidebar-ring));
+    }
+
+    ::-webkit-scrollbar-thumb:active {
+        background: hsl(var(--sidebar-accent));
+    }
+
+
 }
 
 @layer base {
     * {
-        @apply border-border;
+        @apply border-border dark;
     }
 
     body {

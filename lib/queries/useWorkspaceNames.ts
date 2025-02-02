@@ -4,6 +4,7 @@ interface Workspace {
     id: string;
     name: string;
     description?: string;
+    createdAt: number;
 }
 
 async function fetchWorkspaces(): Promise<Workspace[]> {
@@ -16,11 +17,11 @@ async function fetchWorkspaces(): Promise<Workspace[]> {
 
 export function useWorkspaceNames() {
     return useQuery<Workspace[], Error>({
-        queryKey: ['workspaces'],
+        queryKey: ['workspace-names'],
         queryFn: fetchWorkspaces,
         staleTime: 1000 * 60 * 5,
         gcTime: 1000 * 60 * 60,
         retry: 3,
-        select: (data) => data.sort((a, b) => a.name.localeCompare(b.name)),
+        select: (data) => data.sort((a, b) => b.createdAt - a.createdAt),
     });
 }
