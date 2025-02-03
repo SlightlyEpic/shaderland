@@ -12,7 +12,7 @@ import { useUpdateShader } from '@/lib/mutations/useMutateShader';
 import { useWorkspace } from '@/lib/queries/useWorkspace';
 import { useShaderStore } from '@/lib/zustand/store';
 import { TabsContent } from '@radix-ui/react-tabs';
-import { Bot, Loader, RefreshCcw, Save, Sparkles, Terminal } from 'lucide-react';
+import { Bot, Loader, RefreshCcw, Save, Space, Sparkles, Terminal } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -71,6 +71,15 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
 
     useEffect(refreshCanvas, [programId]);
 
+    const { ask, elm: AIChatElm } = AIChat({
+        vertShader: zProgram ? (zProgram.vertexShader ?? '') : '',
+        fragShader: zProgram ? (zProgram.fragmentShader ?? '') : '',
+    });
+
+    const explainWithAI = useCallback(() => {
+        ask('Can you explain how both of my shaders work?');
+    }, [ask]);
+
     return (
         <div className='flex flex-col w-full h-full'>
             <ResizablePanelGroup direction='horizontal'>
@@ -108,7 +117,7 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
                         <div className='flex h-12 border-b justify-end items-center'>
                             {programId && <>
                                 <div className='mr-auto flex items-center px-2 gap-2'>
-                                    <Button size='sm'>
+                                    <Button size='sm' onClick={explainWithAI}>
                                         <Sparkles /> Explain with AI
                                     </Button>
                                     <Button size='sm' variant='ghost'>
@@ -118,6 +127,10 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
                                                 : <><Save /> Save</>
                                         }
                                     </Button>
+                                </div>
+                                <div className='text-muted-foreground text-sm mr-2 select-none'>
+                                    {/* Ctrl+<Space className='inline' /> for AI autocomplete */}
+                                    Ctrl+Space for AI autocomplete
                                 </div>
                                 <div
                                     className={twMerge(
@@ -160,10 +173,7 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
                                         </TabsTrigger>
                                     </TabsList>
                                     <TabsContent value="AI" className='h-full focus:outline-none outline-none focus:border-transparent focus:ring-0'>
-                                        <AIChat 
-                                            vertShader={zProgram ? (zProgram.vertexShader ?? '') : ''}
-                                            fragShader={zProgram ? (zProgram.fragmentShader ?? '') : ''}
-                                        />
+                                        {AIChatElm}
                                     </TabsContent>
                                     <TabsContent value="Errors" className='h-full mb-8'>
                                         <div className='border w-full h-full grow p-2 font-mono whitespace-pre'>

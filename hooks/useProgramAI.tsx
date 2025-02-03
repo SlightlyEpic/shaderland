@@ -15,10 +15,11 @@ function genSystemPrompt(vert: string, frag: string): string {
 
         Provide concise and helpful answers to their questions about the shaders, debugging, or WebGL concepts.
         Do not use markdown, all responses should be plaintext.
+        $$$#$
     `;
 }
 
-export function useProgramAI(programId: string, vertShader: string, fragShader: string) {
+export function useProgramAI(vertShader: string, fragShader: string) {
     const { chats, addMessage } = useChatStore(); // Zustand store
     const [isThinking, setThinking] = useState(0);
     const lastVertShader = useRef('');
@@ -27,7 +28,7 @@ export function useProgramAI(programId: string, vertShader: string, fragShader: 
     // System prompt that includes the latest shader code
     const { messages, append, isLoading } = useChat({
         api: '/api/ai/chat',
-        initialMessages: chats[programId] || [
+        initialMessages: chats || [
             {
                 id: 'user',
                 role: 'user',
@@ -43,7 +44,7 @@ export function useProgramAI(programId: string, vertShader: string, fragShader: 
         ] satisfies Message[],
         onFinish: (message) => {
             // Save the AI's response to the Zustand store
-            addMessage(programId, message as Message);
+            addMessage(message as Message);
             setThinking(t => t - 1);
         },
     });
@@ -78,11 +79,11 @@ export function useProgramAI(programId: string, vertShader: string, fragShader: 
         }
 
         // Save the user's question to the Zustand store
-        addMessage(programId, userMessage);
+        addMessage(userMessage);
 
         setThinking(t => t + 1);
         await append(actualUserMessage);
     };
 
-    return { ask, messages: chats[programId] || messages, isLoading, isThinking };
+    return { ask, messages: chats || messages, isLoading, isThinking };
 }

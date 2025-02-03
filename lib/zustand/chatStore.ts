@@ -11,10 +11,10 @@ export type Message = {
 // Define the type for the chat state
 type ChatState = {
     // Map programId to its chat messages
-    chats: Record<string, Message[]>;
+    chats: Message[];
 
     // Add a message to a specific program's chat
-    addMessage: (programId: string, message: Message) => void;
+    addMessage: (message: Message) => void;
 
     // Clear the chat for a specific program
     clearChat: (programId: string) => void;
@@ -23,28 +23,23 @@ type ChatState = {
 // Create the Zustand store
 export const useChatStore = create<ChatState>((set) => ({
     // Initialize chats as an empty object
-    chats: {},
+    chats: [
+        {
+            id: 'assistant',
+            context: '',
+            role: 'assistant',
+            content: 'Hello! I\'m your AI powered code assistant, feel free to ask me any questions you have.'
+        },
+    ],
 
     // Add a message to a specific program's chat
-    addMessage: (programId, message) =>
+    addMessage: (message) =>
         set((state) => {
-            let prevMessages = state.chats[programId];
-            if (!prevMessages) {
-                prevMessages = [
-                    {
-                        id: 'assistant',
-                        context: '',
-                        role: 'assistant',
-                        content: 'Hello! I\'m your AI powered code assistant, feel free to ask me any questions you have.'
-                    },
-                ]
-            };
-
             return {
-                chats: {
+                chats: [
                     ...state.chats,
-                    [programId]: [...(prevMessages), message],
-                },
+                    message,
+                ],
             }
         }),
 

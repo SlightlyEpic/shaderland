@@ -1,5 +1,7 @@
-import React, { useRef, useEffect, useState } from 'react';
+import { useAutocompleteAI } from '@/hooks/useAutocompleteAI';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import * as shiki from 'shiki';
+import { twMerge } from 'tailwind-merge';
 
 type ShaderEditorProps = {
     value?: string;
@@ -15,6 +17,10 @@ const ShaderEditor: React.FC<ShaderEditorProps> = ({ value, onChange, className 
     const editorRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [highlighter, setHighlighter] = useState<shiki.Highlighter | null>(null);
+
+    const [cursorPosition, setCursorPosition] = useState<number>(0);
+    const { autocomplete } = useAutocompleteAI();
+    const [isCompleting, setIsCompleting] = useState(false);
 
     const lines = value?.split('\n')?.length ?? 1;
 
@@ -40,6 +46,21 @@ const ShaderEditor: React.FC<ShaderEditorProps> = ({ value, onChange, className 
         }
     }, [value, highlighter]);
 
+    const doAutocompleteAI = useCallback(async () => {
+        if(!textareaRef.current) return;
+        setIsCompleting(true);
+        console.log('do autocomplete');
+        try {
+            // await new Promise(r => setTimeout(r, 3000));
+            const newShader = await autocomplete(value ?? '', textareaRef.current.selectionStart);
+            onChange(newShader);
+        } catch(e) {
+            console.error('Autocomplete failed:', e);
+        } finally {
+            setIsCompleting(false);
+        }
+    }, [value]);
+
     // Handle text input
     const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         onChange(e.target.value);
@@ -47,6 +68,10 @@ const ShaderEditor: React.FC<ShaderEditorProps> = ({ value, onChange, className 
 
     // Handle tab key
     const handleKeyDown = (e: React.KeyboardEvent) => {
+        if(e.ctrlKey && e.key === ' ') {
+            doAutocompleteAI();
+        }
+        
         if (e.key === 'Tab' && value) {
             e.preventDefault();
             const target = e.target as HTMLTextAreaElement;
@@ -64,15 +89,21 @@ const ShaderEditor: React.FC<ShaderEditorProps> = ({ value, onChange, className 
             // Reset cursor position
             requestAnimationFrame(() => {
                 if (textareaRef.current) {
-                    textareaRef.current.selectionStart = start + 2;
-                    textareaRef.current.selectionEnd = start + 2;
+                    textareaRef.current.selectionStart = start + 4;
+                    textareaRef.current.selectionEnd = start + 4;
                 }
             });
         }
     };
 
+    const handleButtonClick = (e: React.MouseEvent<HTMLTextAreaElement, MouseEvent>) => {
+        if(textareaRef.current) {
+            setCursorPosition(textareaRef.current.selectionStart);
+        }
+    };
+
     return (
-        <div className={`relative font-mono text-sm ${className}`}>
+        <div className={twMerge(`relative font-mono text-sm ${className}`, isCompleting && 'brightness-50')}>
             <style>{`
                 .shader-editor {
                     margin: 0;
@@ -149,10 +180,12 @@ const ShaderEditor: React.FC<ShaderEditorProps> = ({ value, onChange, className 
                         aria-hidden="true"
                     />
                     <textarea
+                        disabled={isCompleting}
                         ref={textareaRef}
                         value={value}
                         onChange={handleTextareaChange}
                         onKeyDown={handleKeyDown}
+                        onClick={handleButtonClick}
                         spellCheck="false"
                         className="shader-editor-textarea bg-transparent"
                         autoCapitalize="off"
