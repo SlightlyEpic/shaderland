@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useShaderStore } from '@/lib/zustand/store';
+import React, { useCallback, useEffect, useRef } from 'react';
 
 type GLCanvasProps = {
     vertShaderSource?: string,
@@ -14,7 +15,6 @@ export function GLCanvas(props: GLCanvasProps) {
     const glContextRef = useRef<WebGLRenderingContext | null>(null);
     const animationFrameRef = useRef<number>();
     const startTimeRef = useRef<number>(Date.now());
-    // const [mousePos, setMousePos] = useState<[number, number]>([0, 0]);
     const mousePos = useRef<[number, number]>([0, 0]);
     const programRef = useRef<WebGLProgram | null>(null);
     const uniformLocationsRef = useRef<{
@@ -22,6 +22,7 @@ export function GLCanvas(props: GLCanvasProps) {
         mouse?: WebGLUniformLocation | null;
         resolution?: WebGLUniformLocation | null;
     }>({});
+    const setShaderError = useShaderStore(state => state.setShaderOutput);
 
     // Initialize WebGL context
     useEffect(() => {
@@ -31,7 +32,8 @@ export function GLCanvas(props: GLCanvasProps) {
 
         const gl = canvasRef.current.getContext('webgl');
         if (!gl) {
-            console.error('WebGL not supported');
+            console.error('❌ WebGL not supported');
+            setShaderError('❌ WebGL not supported');
             return;
         }
         glContextRef.current = gl;
@@ -39,7 +41,7 @@ export function GLCanvas(props: GLCanvasProps) {
         // Create shader program
         const program = createShaderProgram(gl, props.vertShaderSource, props.fragShaderSource);
         if (!program) return;
-        
+
         programRef.current = program;
         gl.useProgram(program);
 
@@ -53,9 +55,9 @@ export function GLCanvas(props: GLCanvasProps) {
         // Create a simple quad that fills the canvas
         const positions = new Float32Array([
             -1.0, -1.0,
-             1.0, -1.0,
-            -1.0,  1.0,
-             1.0,  1.0,
+            1.0, -1.0,
+            -1.0, 1.0,
+            1.0, 1.0,
         ]);
 
         // Create and bind position buffer
@@ -88,11 +90,10 @@ export function GLCanvas(props: GLCanvasProps) {
     useEffect(() => {
         function handleMouseMove(event: MouseEvent) {
             if (!canvasRef.current) return;
-            
+
             const rect = canvasRef.current.getBoundingClientRect();
             const x = (event.clientX - rect.left) / rect.width;
             const y = 1.0 - (event.clientY - rect.top) / rect.height;
-            // setMousePos([x, y]);
             mousePos.current = [x, y];
         }
 
@@ -104,14 +105,13 @@ export function GLCanvas(props: GLCanvasProps) {
         }
     }, []);
 
-
     // Animation loop
     const animate = useCallback(() => {
         if (!glContextRef.current || !programRef.current) return;
 
         const gl = glContextRef.current;
         const uniforms = uniformLocationsRef.current;
-        
+
         if (uniforms.time && props.timeUniform) {
             const currentTime = (Date.now() - startTimeRef.current) / 1000.0;
             gl.uniform1f(uniforms.time, currentTime);
@@ -127,13 +127,14 @@ export function GLCanvas(props: GLCanvasProps) {
 
         render(gl);
         animationFrameRef.current = requestAnimationFrame(animate);
-    }, [props.mouseUniform, props.timeUniform])
+    }, [props.mouseUniform, props.timeUniform]);
 
     // Shader creation functions remain the same...
     function createShader(gl: WebGLRenderingContext, type: number, source: string): WebGLShader | null {
         const shader = gl.createShader(type);
         if (!shader) {
-            console.error('Failed to create shader');
+            console.error('❌ Failed to create shader');
+            setShaderError('❌ Failed to create shader');
             return null;
         }
 
@@ -141,7 +142,8 @@ export function GLCanvas(props: GLCanvasProps) {
         gl.compileShader(shader);
 
         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-            console.error('Shader compilation error:', gl.getShaderInfoLog(shader));
+            console.error('❌ Shader compilation error:', gl.getShaderInfoLog(shader));
+            setShaderError('❌ Shader compilation error:' + gl.getShaderInfoLog(shader));
             gl.deleteShader(shader);
             return null;
         }
@@ -161,7 +163,8 @@ export function GLCanvas(props: GLCanvasProps) {
 
         const program = gl.createProgram();
         if (!program) {
-            console.error('Failed to create program');
+            console.error('❌ Failed to create program');
+            setShaderError('❌ Failed to create program');
             return null;
         }
 
@@ -170,7 +173,8 @@ export function GLCanvas(props: GLCanvasProps) {
         gl.linkProgram(program);
 
         if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-            console.error('Program linking error:', gl.getProgramInfoLog(program));
+            console.error('❌ Program linking error:', gl.getProgramInfoLog(program));
+            setShaderError('❌ Program linking error:' + gl.getProgramInfoLog(program));
             gl.deleteProgram(program);
             gl.deleteShader(vertShader);
             gl.deleteShader(fragShader);
@@ -180,6 +184,7 @@ export function GLCanvas(props: GLCanvasProps) {
         gl.deleteShader(vertShader);
         gl.deleteShader(fragShader);
 
+        setShaderError('Compiled without errors ✅');
         return program;
     }
 
@@ -227,7 +232,7 @@ export function GLCanvas(props: GLCanvasProps) {
 
     return (
         <div ref={containerRef} className="w-full h-full relative">
-            <canvas 
+            <canvas
                 ref={canvasRef}
                 className="absolute top-0 left-0"
             />

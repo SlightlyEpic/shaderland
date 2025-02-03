@@ -1,16 +1,18 @@
 'use client';
 
+import { AIChat } from '@/components/my/workspace/ide/chat';
 import ShaderEditor from '@/components/my/workspace/ide/editor';
 import { GLCanvas } from '@/components/my/workspace/ide/gl-canvas';
 import { Button } from '@/components/ui/button';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCurrentWorkspace } from '@/hooks/useCurrentWorkspace';
 import { useUpdateShader } from '@/lib/mutations/useMutateShader';
 import { useWorkspace } from '@/lib/queries/useWorkspace';
-import { defaultVertexShaderSource, defaultFragmentShaderSource } from '@/lib/util/defaultShaders';
 import { useShaderStore } from '@/lib/zustand/store';
-import { Loader, RefreshCcw, Save, Sparkles } from 'lucide-react';
+import { TabsContent } from '@radix-ui/react-tabs';
+import { Bot, Loader, RefreshCcw, Save, Sparkles, Terminal } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -32,6 +34,8 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
     const workspaceId = useCurrentWorkspace();
     const workspace = useWorkspace(workspaceId);
 
+    const shaderErrors = useShaderStore(state => state.shaderOutput);
+
     const programId = useShaderStore(state => state.currentProgramId);
     const setCurrentShader = useShaderStore(state => state.setCurrentShader);
     const setCurrentProgramId = useShaderStore(state => state.setCurrentProgramId);
@@ -40,19 +44,19 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
     const currentShader = useShaderStore(state => state.currentShader);
 
     // const program = workspace?.data?.programs?.find(p => (p._id as unknown as string) === programId);
-    const program = useShaderStore(state => programId ? state.programs[programId] : null);
+    const zProgram = useShaderStore(state => programId ? state.programs[programId] : null);
     const [shaderContent, setShaderContent] = useState<string>()
-    
+
     useEffect(() => {
         currentShader === 'vertex'
-            ? setShaderContent(program?.vertexShader)
-            : setShaderContent(program?.fragmentShader);
-    }, [program, currentShader]);
+            ? setShaderContent(zProgram?.vertexShader)
+            : setShaderContent(zProgram?.fragmentShader);
+    }, [zProgram, currentShader]);
 
     const refreshCanvas = useCallback(() => setRefreshCanvas(r => !r), []);
     const updateShaderSource = useCallback((source: string) => {
-        if(!programId) return;
-        if(currentShader === 'vertex') {
+        if (!programId) return;
+        if (currentShader === 'vertex') {
             updateVertexShader(programId, source);
             setShaderContent(source);
         } else {
@@ -75,7 +79,7 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
                         {/* <div className='text-white/30 p-3'>
                             WebGL output
                         </div> */}
-                        
+
                         <div className='flex items-center gap-2 text-sm border-x p-3'>
                             <Switch checked={enableTimeUniform} onCheckedChange={setEnableTimeUniform} />
                             u_time
@@ -86,13 +90,13 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
                         </div>
 
                         <Button className='group flex items-center ml-auto mr-2' size='sm' onClick={refreshCanvas}>
-                            <RefreshCcw className='transition-transform duration-500 rotate-0 group-hover:rotate-180' /> 
+                            <RefreshCcw className='transition-transform duration-500 rotate-0 group-hover:rotate-180' />
                             Refresh output
                         </Button>
                     </div>
                     <GLCanvas
-                        vertShaderSource={program?.vertexShader}
-                        fragShaderSource={program?.fragmentShader}
+                        vertShaderSource={zProgram?.vertexShader}
+                        fragShaderSource={zProgram?.fragmentShader}
                         refresh={_refreshCanvas}
                         mouseUniform={enableMouseUniform}
                         timeUniform={enableTimeUniform}
@@ -115,7 +119,7 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
                                         }
                                     </Button>
                                 </div>
-                                <div 
+                                <div
                                     className={twMerge(
                                         'flex items-center px-4 w-max border-r cursor-pointer h-full',
                                         currentShader === 'vertex' ? 'bg-primary' : 'bg-secondary'
@@ -124,7 +128,7 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
                                 >
                                     vertex.glsl
                                 </div>
-                                <div 
+                                <div
                                     className={twMerge(
                                         'flex items-center px-4 w-max border-r cursor-pointer h-full',
                                         currentShader === 'fragment' ? 'bg-primary' : 'bg-secondary'
@@ -135,12 +139,40 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
                                 </div>
                             </>}
                         </div>
-                        <div className='overflow-y-scroll'>
-                            <ShaderEditor
-                                value={shaderContent!}
-                                onChange={updateShaderSource}
-                            />
-                        </div>
+                        <ResizablePanelGroup direction='vertical'>
+                            <ResizablePanel defaultSize={80}>
+                                <div className='overflow-y-scroll'>
+                                    <ShaderEditor
+                                        value={shaderContent!}
+                                        onChange={updateShaderSource}
+                                    />
+                                </div>
+                            </ResizablePanel>
+                            <ResizableHandle withHandle />
+                            <ResizablePanel defaultSize={20} className='p-2'>
+                                <Tabs defaultValue="Errors" className="w-full h-full">
+                                    <TabsList className="grid w-full grid-cols-2 mb-2">
+                                        <TabsTrigger value="AI" className='p-0 h-full rounded-r-none flex gap-2'>
+                                            <Bot /> Ask AI
+                                        </TabsTrigger>
+                                        <TabsTrigger value="Errors" className='p-0 h-full rounded-l-none flex gap-2'>
+                                            <Terminal /> Compile Status
+                                        </TabsTrigger>
+                                    </TabsList>
+                                    <TabsContent value="AI" className='h-full focus:outline-none outline-none focus:border-transparent focus:ring-0'>
+                                        <AIChat 
+                                            vertShader={zProgram ? (zProgram.vertexShader ?? '') : ''}
+                                            fragShader={zProgram ? (zProgram.fragmentShader ?? '') : ''}
+                                        />
+                                    </TabsContent>
+                                    <TabsContent value="Errors" className='h-full mb-8'>
+                                        <div className='border w-full h-full grow p-2 font-mono whitespace-pre'>
+                                            {shaderErrors ?? 'Compiled without errors ✅'}
+                                        </div>
+                                    </TabsContent>
+                                </Tabs>
+                            </ResizablePanel>
+                        </ResizablePanelGroup>
                     </div>
                 </ResizablePanel>
             </ResizablePanelGroup>

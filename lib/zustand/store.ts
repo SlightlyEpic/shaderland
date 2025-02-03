@@ -18,6 +18,7 @@ interface ShaderStore {
 
     programs: Record<string, ShaderProgram>
 
+    setProgram: (program: ShaderProgram) => void
     createProgram: (id: string, name: string) => string
     deleteProgram: (id: string) => void
     updateProgramName: (id: string, name: string) => void
@@ -26,6 +27,9 @@ interface ShaderStore {
     updateFragmentShader: (id: string, content: string) => void
 
     getCurrentProgram: () => ShaderProgram | null
+
+    shaderOutput: string;
+    setShaderOutput: (error: string) => void
 }
 
 export const useShaderStore = create<ShaderStore>()(
@@ -34,9 +38,19 @@ export const useShaderStore = create<ShaderStore>()(
             currentProgramId: null,
             currentShader: 'vertex',
             programs: {},
+            shaderOutput: '',
 
             setCurrentProgramId: (id) => set({ currentProgramId: id }),
             setCurrentShader: (shader: 'vertex' | 'fragment') => set({ currentShader: shader }),
+
+            setProgram: (program: ShaderProgram) => {
+                set((state) => ({
+                    programs: {
+                        ...state.programs,
+                        [program.id]: program,
+                    }
+                }))
+            },
 
             createProgram: (id, name) => {
                 const newProgram: ShaderProgram = {
@@ -107,6 +121,12 @@ export const useShaderStore = create<ShaderStore>()(
             getCurrentProgram: () => {
                 const state = get()
                 return state.currentProgramId ? state.programs[state.currentProgramId] : null
+            },
+
+            setShaderOutput: (output: string) => {
+                set((state) => ({
+                    shaderOutput: output
+                }));
             }
         }),
         {
