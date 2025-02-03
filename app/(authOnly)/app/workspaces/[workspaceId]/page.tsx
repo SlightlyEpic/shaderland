@@ -163,7 +163,7 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
                             </ResizablePanel>
                             <ResizableHandle withHandle />
                             <ResizablePanel defaultSize={20} className='p-2'>
-                                <Tabs defaultValue="Errors" className="w-full h-full">
+                                <Tabs defaultValue="AI" className="w-full h-full">
                                     <TabsList className="grid w-full grid-cols-2 mb-2">
                                         <TabsTrigger value="AI" className='p-0 h-full rounded-r-none flex gap-2'>
                                             <Bot /> Ask AI

@@ -52,7 +52,7 @@ const ShaderEditor: React.FC<ShaderEditorProps> = ({ value, onChange, className 
         console.log('do autocomplete');
         try {
             // await new Promise(r => setTimeout(r, 3000));
-            const newShader = await autocomplete(value ?? '', textareaRef.current.selectionStart);
+            const newShader = await autocomplete(value ?? '', textareaRef.current.selectionEnd || textareaRef.current.selectionStart);
             onChange(newShader);
         } catch(e) {
             console.error('Autocomplete failed:', e);

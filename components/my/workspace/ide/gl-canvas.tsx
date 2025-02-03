@@ -230,6 +230,20 @@ export function GLCanvas(props: GLCanvasProps) {
         return () => resizeObserver.disconnect();
     }, []);
 
+    useEffect(() => {
+        let id = setInterval(() => {
+            if(containerRef.current && canvasRef.current) {
+                let canvas = canvasRef.current;
+                let container = containerRef.current;
+                let rect = container.getBoundingClientRect();
+                canvas.style.width = `${rect.width}px`;
+                canvas.style.height = `${rect.height}px`;
+            }
+        }, 200);
+
+        return () => clearInterval(id);
+    }, []);
+
     return (
         <div ref={containerRef} className="w-full h-full relative">
             <canvas

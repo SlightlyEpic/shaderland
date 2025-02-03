@@ -1,10 +1,12 @@
-import { useChat } from 'ai/react';
+import { Message, useChat } from 'ai/react';
+import { useMemo } from 'react';
 
+// export function useAutocompleteAI({ onReply }: { onReply: (m: Message) => unknown }) {
 export function useAutocompleteAI() {
     const { messages, append, isLoading, setMessages, reload } = useChat({
         api: '/api/ai/chat',
         initialMessages: [],
-    });
+    })
 
     const autocomplete = async (shader: string, position: number) => {
         let line = '';
@@ -45,7 +47,8 @@ export function useAutocompleteAI() {
             Do not include the initial "L1" text. Try to preserve the indent of the line, if you cant figure out the indent then put 4 spaces before the line.
         `;
         // Only autocomplete after the words "${l.substring(Math.max(0, linePos - 10), linePos)}"
-            
+        console.log('system prompt: ', message);
+
         setMessages([
             {
                 id: `autocomplete-${Date.now()}`,
@@ -55,7 +58,7 @@ export function useAutocompleteAI() {
         ]);
         await reload();
         const newLine = messages.length ? messages[messages.length - 1] : null;
-        // console.log('newLine: ', newLine);
+        console.log('newLine: ', newLine);
 
         if(!newLine) return shader;
 
