@@ -34,10 +34,14 @@ export default function Home() {
                         </div>
                         <div className='font-mono ml-[116px]'>
                             <div>Features:</div>
-                            <div>• Explain code using AI</div>
+                            <div>• Integrated AI chat as a code companion</div>
                             <div>• Code with ease using AI autocomplete</div>
                             <div>• Integrated WebGL output preview</div>
                             <div>• Organize your shaders into multiple workspaces</div>
+                            <div>• IDE with syntax highlighting and line numbering</div>
+                            <div>• Email auth and Google OAuth supported</div>
+                            <div>• Password reset functionality supported</div>
+                            <div>• Modern, responsive and clean UI</div>
                         </div>
                     </div>
 
