@@ -57,7 +57,12 @@ export function useAutocompleteAI() {
             }
         ]);
         await reload();
-        const newLine = messages.length ? messages[messages.length - 1] : null;
+        let newMessages: Message[] = [];
+        setMessages(m => {
+            newMessages = m;
+            return m;
+        })
+        const newLine = newMessages.length ? newMessages[newMessages.length - 1] : null;
         console.log('newLine: ', newLine);
 
         if(!newLine) return shader;
