@@ -5,6 +5,10 @@ Shaderland is an AI-enhanced web IDE for writing WebGL shaders, making shader de
 🚀 **Deploy Your Own:**  [Deployment Guide](https://github.com/SlightlyEpic/shaderland/Deploy_Guide.md)  
 📂 **GitHub Repository:** https://github.com/SlightlyEpic/shaderland  
 
+**Demo login credentials:** (for https://shaderland.vercel.app)
+- Email: `sampleuser@gmail.com`
+- Password: `1234sample@`
+
 ---
 
 ## ✨ Key Features

@@ -20,11 +20,11 @@ export default function Home() {
                 <div className='w-full flex items-center justify-evenly flex-col lg:flex-row p-8 gap-8 h-full'>
                     <div className='flex flex-col w-1/3 gap-8'>
                         <div className='w-max flex items-center justify-center flex-col md:flex-row gap-4 text-center md:text-left'>
-                            <div className='relative w-[100px] h-[100px]'>
+                            {/* <div className='relative w-[100px] h-[100px]'>
                                 <Logo3D className='absolute z-10' />
                                 <div className='absolute w-[100px] h-[100px] rounded-full bg-white' />
                                 <div className='absolute w-[90px] h-[90px] top-[5px] left-[5px] rounded-full bg-primary' />
-                            </div>
+                            </div> */}
                             <div className='flex flex-col gap-2'>
                                 <h1 className='text-4xl md:text-6xl font-extrabold'>Shaderland</h1>
                                 <h2 className='flex items-center gap-2 text-xl md:text-sm text-center font-mono font-bold'>
@@ -32,7 +32,8 @@ export default function Home() {
                                 </h2>
                             </div>
                         </div>
-                        <div className='font-mono ml-[116px]'>
+                        {/* <div className='font-mono ml-[116px]'> */}
+                        <div className='font-mono'>
                             <div>Features:</div>
                             <div>• Integrated AI chat as a code companion</div>
                             <div>• Code with ease using AI autocomplete</div>
