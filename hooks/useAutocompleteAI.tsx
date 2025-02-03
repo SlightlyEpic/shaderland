@@ -68,6 +68,7 @@ export function useAutocompleteAI() {
         console.log('newLine: ', newLine);
 
         if(!newLine) return shader;
+        if(newLine.role === 'user') return shader;
 
         let lines = shader.split('\n');
         lines[cursorLine - 1] = newLine.content;
