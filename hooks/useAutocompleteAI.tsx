@@ -36,7 +36,9 @@ export function useAutocompleteAI() {
             }
         }
 
-        const message = `
+        const messageContent = `
+            Please ignore all previous messages.
+
             Shader:
             ${modShader}
 
@@ -47,16 +49,16 @@ export function useAutocompleteAI() {
             Do not include the initial "L1" text. Try to preserve the indent of the line, if you cant figure out the indent then put 4 spaces before the line.
         `;
         // Only autocomplete after the words "${l.substring(Math.max(0, linePos - 10), linePos)}"
-        console.log('system prompt: ', message);
+        console.log('system prompt: ', messageContent);
 
-        setMessages([
-            {
-                id: `autocomplete-${Date.now()}`,
-                role: 'user',
-                content: message,
-            }
-        ]);
-        await reload();
+        const message: Message = {
+            id: `autocomplete-${Date.now()}`,
+            role: 'user',
+            content: messageContent,
+        };
+        await setMessages([]);
+        await append(message);
+
         let newMessages: Message[] = [];
         setMessages(m => {
             newMessages = m;
