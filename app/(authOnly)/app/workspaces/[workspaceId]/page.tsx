@@ -26,7 +26,7 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
     const [_refreshCanvas, setRefreshCanvas] = useState(false);
     const saveShaderSource = useUpdateShader();
 
-    const [enableTimeUniform, setEnableTimeUniform] = useState(false);
+    const [enableTimeUniform, setEnableTimeUniform] = useState(true);
     const [enableMouseUniform, setEnableMouseUniform] = useState(false);
 
     const workspaceId = useCurrentWorkspace();
